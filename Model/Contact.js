@@ -7,6 +7,9 @@ module.exports=(DataTypes,sequelize,Model)=>{
         },
         current_address:{
             type:DataTypes.STRING,
+        },
+        user_id:{
+            type:DataTypes.INTEGER
         }
     },{ sequelize,
         tabelname:"contact"

@@ -6,8 +6,12 @@ module.exports = (DataTypes, sequelize) => {
         type: DataTypes.STRING,
         get() {
           const rawValue = this.getDataValue("firstname");
-          return rawValue ? "Mr." + rawValue.toUpperCase() : null;
+          return rawValue ? "Mr." + rawValue : null;
         },
+        validate:{
+            isAlpha:{msg:'Only Alphabetic are allowed'},
+            isLowercase:{msg:'Only lower case are allowed'}
+        }
       },
       lastname: {
         type: DataTypes.STRING,

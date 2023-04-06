@@ -1,8 +1,11 @@
-const { user } = require("../Model/index");
 const db = require("../Model/index");
+const contacts = db.contacts;
 const Users = db.user;
-const { Op, where } = require("sequelize");
-const sequelize = require("sequelize");
+const sequelize = db.sequelize;
+const { Op, where, QueryTypes } = require("sequelize");
+const Contact = require("../Model/Contact");
+const User = require("../Model/User");
+// const sequelize = require("sequelize");
 // getAll user details
 // findAll without attributes get All tabel column details.
 // attribute nested array use of changes the database tabel column name.
@@ -76,19 +79,69 @@ const findandcreate = async (req, res) => {
   });
   res.json({ data: user, created: created });
 };
-const getvirtuates=async(req,res)=>{
-  const user=await Users.findAll()
-  res.json({user:user})
-}
+const getvirtuates = async (req, res) => {
+  const user = await Users.findAll();
+  res.json({ user: user });
+};
 // virtual=>set value
-const virtual=async(req,res)=>{
-  const user=await Users.create({
-    firstname:"jayu",
-    lastname:'bodar'
+const virtual = async (req, res) => {
+  const user = await Users.create({
+    firstname: "jayu",
+    lastname: "bodar",
+  });
+  res.json({ user: user });
+};
+const validateuser = async (req, res) => {
+  let data, message;
+  try {
+    data = await Users.create({
+      firstname: "jaydeep",
+      lastname: "Patel",
+    });
+  } catch (e) {
+    // console.log('errors',e.errors)
+    e.errors.forEach((error) => {
+      console.log("pathdata", error);
+      switch (error.validatorKey) {
+        case "isLowercase":
+          message = error.message;
+          break;
+        case "isAlpha":
+          message = error.message;
+      }
+      message[error.path] = message;
+    });
+  }
+  res.json({ user: data, message: message });
+};
+const rawquery = async (req, res) => {
+  const user = await sequelize.query(
+    "SELECT * FROM Users WHERE firstname = :firstname",
+    {
+      replacements: { firstname: "jaydeep" },
+      type: QueryTypes.SELECT,
+    }
+  );
+  console.log("object", user);
+  res.json({ user: user });
+};
+const oneTooneuser = async (req, res) => {
+  // const data = await Users.create({
+  //   firstname: "deep",
+  //   lastname: "Patel",
+  // });
+  // if(data && data.id){
+  //   await contacts.create({permenent_address:'abc',current_address:'pqr',user_id:data.id})
+  // }
+  const data=await Users.findAll({
+    include:contacts
   })
-  res.json({user:user})
-}
+  res.json({user:data})
+};
 module.exports = {
+  oneTooneuser,
+  rawquery,
+  validateuser,
   virtual,
   getvirtuates,
   findandcreate,
