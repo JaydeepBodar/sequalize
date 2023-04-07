@@ -16,6 +16,8 @@ app.get('/virtual',usercontroller.virtual)
 app.get('/validate',usercontroller.validateuser)
 app.get('/rawquery',usercontroller.rawquery)
 app.get('/onetoone',usercontroller.oneTooneuser)
+app.get('/onetomany',usercontroller.onetoMany)
+app.get('/manytomany',usercontroller.ManytoMany)
 app.listen(8080,function check(err){
     if(err){
         console.log("error generate");   

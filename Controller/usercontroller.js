@@ -127,18 +127,55 @@ const rawquery = async (req, res) => {
 };
 const oneTooneuser = async (req, res) => {
   // const data = await Users.create({
-  //   firstname: "deep",
+  //   firstname: "jaydeep",
   //   lastname: "Patel",
   // });
   // if(data && data.id){
-  //   await contacts.create({permenent_address:'abc',current_address:'pqr',user_id:data.id})
+  //   await contacts.create({permenent_address:'xyz',current_address:'abcpqr',UserId:data.id})
   // }
-  const data=await Users.findAll({
-    include:contacts
-  })
-  res.json({user:data})
+  const data = await Users.findAll({
+    attributes: ["id", "firstname", "lastname", "fullname"],
+    include: [
+      {
+        model: contacts,
+        // as:"Contactdetails"
+        attributes: ["permenent_address", "current_address", "UserId"],
+      },
+    ],
+  });
+  res.json({ user: data });
 };
+const onetoMany=async(req,res)=>{
+    // const data=await contacts.create({permenent_address:'newaddress',current_address:'newaddress',UserId:45})
+    const data = await Users.findAll({
+      attributes: ["id", "firstname", "lastname", "fullname"],
+      include: [
+        {
+          model: contacts,
+          // as:"Contactdetails"
+          attributes: ["permenent_address", "current_address", "UserId"],
+        },
+      ],
+    });
+    res.json({data:data})
+  }
+const ManytoMany=async(req,res)=>{
+   const data = await Users.findAll({
+      attributes: ["id", "firstname", "lastname", "fullname"],
+      include: [
+        {
+          model: contacts,
+          // as:"Contactdetails"
+          attributes: ["permenent_address", "current_address"],
+        },
+      ],
+    });
+  // const data=await contacts.create({permenent_address:'newaddress',current_address:'newaddress'})
+    res.json({data:data})
+}
 module.exports = {
+  ManytoMany,
+  onetoMany,
   oneTooneuser,
   rawquery,
   validateuser,
