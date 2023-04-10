@@ -18,6 +18,9 @@ app.get('/rawquery',usercontroller.rawquery)
 app.get('/onetoone',usercontroller.oneTooneuser)
 app.get('/onetomany',usercontroller.onetoMany)
 app.get('/manytomany',usercontroller.ManytoMany)
+app.get('/paranoid',usercontroller.paranoid)
+app.get('/lazyloading',usercontroller.lazyloading)
+app.get('/eageruser',usercontroller.eageruser)
 app.listen(8080,function check(err){
     if(err){
         console.log("error generate");   

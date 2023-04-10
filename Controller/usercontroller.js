@@ -1,5 +1,6 @@
 const db = require("../Model/index");
 const contacts = db.contacts;
+const education=db.education;
 const Users = db.user;
 const sequelize = db.sequelize;
 const { Op, where, QueryTypes } = require("sequelize");
@@ -145,40 +146,80 @@ const oneTooneuser = async (req, res) => {
   });
   res.json({ user: data });
 };
-const onetoMany=async(req,res)=>{
-    // const data=await contacts.create({permenent_address:'newaddress',current_address:'newaddress',UserId:45})
-    const data = await Users.findAll({
-      attributes: ["id", "firstname", "lastname", "fullname"],
-      include: [
-        {
-          model: contacts,
-          // as:"Contactdetails"
-          attributes: ["permenent_address", "current_address", "UserId"],
-        },
-      ],
-    });
-    res.json({data:data})
-  }
-const ManytoMany=async(req,res)=>{
-   const data = await Users.findAll({
-      attributes: ["id", "firstname", "lastname", "fullname"],
-      include: [
-        {
-          model: contacts,
-          // as:"Contactdetails"
-          attributes: ["permenent_address", "current_address"],
-        },
-      ],
-    });
+const onetoMany = async (req, res) => {
+  // const data=await contacts.create({permenent_address:'newaddress',current_address:'newaddress',UserId:45})
+  const data = await Users.findAll({
+    attributes: ["id", "firstname", "lastname", "fullname"],
+    include: [
+      {
+        model: contacts,
+        // as:"Contactdetails"
+        attributes: ["permenent_address", "current_address", "UserId"],
+      },
+    ],
+  });
+  res.json({ data: data });
+};
+const ManytoMany = async (req, res) => {
+  const data = await Users.findAll({
+    attributes: ["id", "firstname", "lastname", "fullname"],
+    include: [
+      {
+        model: contacts,
+        // as:"Contactdetails"
+        attributes: ["permenent_address", "current_address"],
+      },
+    ],
+  });
   // const data=await contacts.create({permenent_address:'newaddress',current_address:'newaddress'})
-    res.json({data:data})
+  res.json({ data: data });
+};
+const paranoid = async (req, res) => {
+  // const data = await Users.destroy({
+  //   where: { id: 6 }
+  // });
+  const data=await Users.restore({where:{id:6}})
+  res.json({data:data})
+};
+const lazyloading=async(req,res)=>{
+  // lazy loading
+  // const data=await Users.findOne({where:{id:45}})
+  // const contactdata=await data.getContacts()
+  // res.json({data:data,contactdata:contactdata})
+
+  // eager-loading
+  const data = await Users.findAll({
+    attributes: ["id", "firstname", "lastname", "fullname"],
+    include: [
+      {
+        model: contacts,
+        attributes: ["permenent_address", "current_address", "UserId"],
+      },
+    ],
+  });
+  res.json({ user: data });
+}
+// in advanced eager loading if we can retrive left join then in include field object give to all property to true
+const eageruser=async(req,res)=>{
+  const data=await Users.findAll({
+    include:{
+      model:education,
+      // include:{
+      //   model:contacts
+      // }
+    }
+  })
+  res.json({data:data})
 }
 module.exports = {
+  eageruser,
+  lazyloading,
+  paranoid,   
   ManytoMany,
   onetoMany,
   oneTooneuser,
   rawquery,
-  validateuser,
+  validateuser, 
   virtual,
   getvirtuates,
   findandcreate,

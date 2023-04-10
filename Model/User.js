@@ -8,10 +8,10 @@ module.exports = (DataTypes, sequelize) => {
           const rawValue = this.getDataValue("firstname");
           return rawValue ? "Mr." + rawValue : null;
         },
-        validate:{
-            isAlpha:{msg:'Only Alphabetic are allowed'},
-            isLowercase:{msg:'Only lower case are allowed'}
-        }
+        validate: {
+          isAlpha: { msg: "Only Alphabetic are allowed" },
+          isLowercase: { msg: "Only lower case are allowed" },
+        },
       },
       lastname: {
         type: DataTypes.STRING,
@@ -19,7 +19,7 @@ module.exports = (DataTypes, sequelize) => {
           this.setDataValue("lastname", value + " ,Indian");
         },
       },
-      fullname: {
+      fullname: {  
         type: DataTypes.VIRTUAL,
         get() {
           return `${this.firstname} ${this.lastname}`;
@@ -29,7 +29,7 @@ module.exports = (DataTypes, sequelize) => {
         },
       },
     },
-    { tabelname: "users" }
+    { tabelname: "users", paranoid: true, deletedAt: "destroytime" }
   );
   return User;
 };
