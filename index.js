@@ -21,6 +21,9 @@ app.get('/manytomany',usercontroller.ManytoMany)
 app.get('/paranoid',usercontroller.paranoid)
 app.get('/lazyloading',usercontroller.lazyloading)
 app.get('/eageruser',usercontroller.eageruser)
+app.get('/creator',usercontroller.creator)
+app.get('/employeedata',usercontroller.employeedata)
+app.get('/Mnassociation',usercontroller.Mnassociation)
 app.listen(8080,function check(err){
     if(err){
         console.log("error generate");   

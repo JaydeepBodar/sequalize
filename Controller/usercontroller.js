@@ -1,11 +1,12 @@
 const db = require("../Model/index");
 const contacts = db.contacts;
-const education=db.education;
+const education = db.education;
+const contactuser = db.contactuser;
+const employee=db.employee;
+const office=db.offices
 const Users = db.user;
 const sequelize = db.sequelize;
 const { Op, where, QueryTypes } = require("sequelize");
-const Contact = require("../Model/Contact");
-const User = require("../Model/User");
 // const sequelize = require("sequelize");
 // getAll user details
 // findAll without attributes get All tabel column details.
@@ -178,10 +179,10 @@ const paranoid = async (req, res) => {
   // const data = await Users.destroy({
   //   where: { id: 6 }
   // });
-  const data=await Users.restore({where:{id:6}})
-  res.json({data:data})
+  const data = await Users.restore({ where: { id: 6 } });
+  res.json({ data: data });
 };
-const lazyloading=async(req,res)=>{
+const lazyloading = async (req, res) => {
   // lazy loading
   // const data=await Users.findOne({where:{id:45}})
   // const contactdata=await data.getContacts()
@@ -198,28 +199,69 @@ const lazyloading=async(req,res)=>{
     ],
   });
   res.json({ user: data });
-}
+};
 // in advanced eager loading if we can retrive left join then in include field object give to all property to true
-const eageruser=async(req,res)=>{
-  const data=await Users.findAll({
-    include:{
-      model:education,
+const eageruser = async (req, res) => {
+  const data = await Users.findAll({
+    include: {
+      model: education,
       // include:{
       //   model:contacts
       // }
-    }
-  })
+    },
+  });
+  res.json({ data: data });
+};
+const creator = async (req, res) => {
+  await contacts.create(
+    {
+      permenent_address: "add1",
+      current_address: "add2",
+      UserId: 9,
+      Users: {
+        firstname: "jaydeep",
+        lastname: "bodar",
+      },
+    },
+    { include: [contactuser] }
+  );
+  const data = await Users.findAll({
+    include: [contacts],
+  });
+  res.json({ data: data });
+};
+const employeedata=async(req,res)=>{
+  const data=await office.findAll()
   res.json({data:data})
 }
+const Mnassociation=async(req,res)=>{
+  const ndata=await employee.findOne({
+    where:{id:1},
+  })
+  const compines=await office.findOne({
+      where:{id:1}
+  })
+  console.log('fdyutyiuyui',compines)
+  // here addOffice add is sequalize function while office is the model name and always write in capitalize format
+  await ndata.addOffice(compines,{through:{self_Grant:false}}) 
+  const data=await employee.findOne({
+    where:{id:1},
+    include:office
+  })
+  res.json({employeeDetails:data})
+}
 module.exports = {
+  Mnassociation,
+  employeedata,
+  creator,
   eageruser,
   lazyloading,
-  paranoid,   
+  paranoid,
   ManytoMany,
   onetoMany,
   oneTooneuser,
   rawquery,
-  validateuser, 
+  validateuser,
   virtual,
   getvirtuates,
   findandcreate,
