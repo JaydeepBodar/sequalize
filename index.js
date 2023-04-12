@@ -24,6 +24,9 @@ app.get('/eageruser',usercontroller.eageruser)
 app.get('/creator',usercontroller.creator)
 app.get('/employeedata',usercontroller.employeedata)
 app.get('/Mnassociation',usercontroller.Mnassociation)
+app.get('/Mncomplexassociation',usercontroller.Mncomplexassociation)
+app.get('/m2m2m',usercontroller.m2m2m)
+app.get('/associationScope',usercontroller.associationScope)
 app.listen(8080,function check(err){
     if(err){
         console.log("error generate");   

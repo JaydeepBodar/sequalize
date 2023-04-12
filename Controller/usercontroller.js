@@ -2,8 +2,8 @@ const db = require("../Model/index");
 const contacts = db.contacts;
 const education = db.education;
 const contactuser = db.contactuser;
-const employee=db.employee;
-const office=db.offices
+const employee = db.employee;
+const office = db.offices;
 const Users = db.user;
 const sequelize = db.sequelize;
 const { Op, where, QueryTypes } = require("sequelize");
@@ -230,27 +230,145 @@ const creator = async (req, res) => {
   });
   res.json({ data: data });
 };
-const employeedata=async(req,res)=>{
-  const data=await office.findAll()
+const employeedata = async (req, res) => {
+  const data = await office.findAll();
+  res.json({ data: data });
+};
+const Mnassociation = async (req, res) => {
+  //
+  const ndata = await employee.findOne({
+    where: { id: 1 },
+  });
+  const compines = await office.findOne({
+    where: { id: 1 },
+  });
+  console.log("fdyutyiuyui", compines);
+  // here addOffice add is sequalize function while in this fuction office is the model name and always write in capitalize format
+  await ndata.addOffice(compines, { through: { self_Grant: false } });
+  const data = await employee.findOne({
+    where: { id: 1 },
+    include: office,
+  });
+  // using create funtcion to add data in both tabel
+  // const ndata = await employee.create(
+  //   {
+  //     firstName: "ddddd",
+  //     lastName: "fffff",
+  //     extension: "AB1234",
+  //     email: "abc@gmail.com",
+  //     officeCode: "25",
+  //     reportsTo: 4,
+  //     jobTitle: "new",
+  //     office: [
+  //       {
+  //         addressLine1: "asdfghjkl",
+  //         addressLine2: "qwertyuiop",
+  //         postalCode: 789456,
+  //         city: "zxcv",
+  //         territory: "vbnm",
+  //         state: "cvbn",
+  //         country: "sdfghh",
+  //         Employeedetails: {
+  //           self_Grant: true,
+  //         },
+  //       },
+  //     ],
+  //   },
+  //   { include: office }
+  // );
+  // const data = await employee.findOne({
+  //   where: { firstName: "ddddd" },
+  //   include: office,
+  // });
+  res.json({ employeeDetails: data });
+};
+const Mncomplexassociation=async(req,res)=>{
+    const data=await db.employee.findAll({
+      include: {
+        model: office,
+        through: {
+          attributes:['id','self_Grant']
+        }
+      }
+    }); 
+    res.json({data:data})
+}
+const m2m2m=async(req,res)=>{
+  await sequelize.sync();
+  await db.player.bulkCreate([
+    { username: 's0me0ne' },
+    { username: 'empty' },
+    { username: 'greenhead' },
+    { username: 'not_spock' },
+    { username: 'bowl_of_petunias' }
+  ]);
+  await db.game.bulkCreate([
+    { name: 'The Big Clash' },
+    { name: 'Winter Showdown' },
+    { name: 'Summer Beatdown' }
+  ]);
+  await db.team.bulkCreate([
+    { name: 'The Martians' },
+    { name: 'The Earthlings' },
+    { name: 'The Plutonians' }
+  ]);
+  await db.gameTeam.bulkCreate([
+    { GameId: 1, TeamId: 1 },   // this GameTeam will get id 1
+    { GameId: 1, TeamId: 2 },   // this GameTeam will get id 2
+    { GameId: 2, TeamId: 1 },   // this GameTeam will get id 3
+    { GameId: 2, TeamId: 3 },   // this GameTeam will get id 4
+    { GameId: 3, TeamId: 2 },   // this GameTeam will get id 5
+    { GameId: 3, TeamId: 3 }    // this GameTeam will get id 6
+  ]);
+  await db.playerGameTeam.bulkCreate([
+    { PlayerId: 1, GameTeamId: 3 },   // s0me0ne played for The Martians
+    { PlayerId: 3, GameTeamId: 3 },   // greenhead played for The Martians
+    { PlayerId: 4, GameTeamId: 4 },   // not_spock played for The Plutonians
+    { PlayerId: 5, GameTeamId: 4 }    // bowl_of_petunias played for The Plutonians
+  ]);
+  const game = await db.game.findOne({
+    where: {
+      name: "Winter Showdown"
+    },
+    include: {
+      model: db.gameTeam,
+      include: [
+        {
+          model: db.player,
+          through: { attributes: ['GameTeamId','PlayerId'] } // Hide unwanted `PlayerGameTeam` nested object from results
+        },
+        db.team
+      ]
+    }
+  });
+  res.json({game:game})
+}
+const associationScope=async(req,res)=>{
+  // single tabel with multiple field associationscope
+  Users.addScope('id',{
+    where:{firstname:"deep"}
+  })
+  Users.addScope('lastname',{
+    where:{lastname:'Patel ,Indian'}
+  })
+  // const data=await Users.scope(['id','lastname']).findAll({})
+  // multiple tabel using association scope
+  Users.addScope('address',{
+    include:{
+      model:contacts,
+      attributes:['permenent_address','current_address']
+    }
+  })
+  Users.addScope('userdetails',{
+    attributes:['firstname','lastname']
+  })
+  const data=await Users.scope(['userdetails','address']).findAll({})
   res.json({data:data})
 }
-const Mnassociation=async(req,res)=>{
-  const ndata=await employee.findOne({
-    where:{id:1},
-  })
-  const compines=await office.findOne({
-      where:{id:1}
-  })
-  console.log('fdyutyiuyui',compines)
-  // here addOffice add is sequalize function while office is the model name and always write in capitalize format
-  await ndata.addOffice(compines,{through:{self_Grant:false}}) 
-  const data=await employee.findOne({
-    where:{id:1},
-    include:office
-  })
-  res.json({employeeDetails:data})
-}
 module.exports = {
+  associationScope,
+  m2m2m,
+  Mncomplexassociation,
   Mnassociation,
   employeedata,
   creator,
