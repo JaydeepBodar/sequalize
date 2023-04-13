@@ -9,10 +9,12 @@ module.exports=(DataTypes,sequelize,Model)=>{
             type:DataTypes.STRING,
         },
         UserId:{
-            type:DataTypes.INTEGER
+            type:DataTypes.INTEGER,
+            allowNull:false,
         },
     },{ sequelize,
-        tabelname:"contact"
+        tabelname:"contact",
+        
     })
     return Contact;
 }

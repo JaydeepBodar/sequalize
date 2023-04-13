@@ -27,6 +27,7 @@ app.get('/Mnassociation',usercontroller.Mnassociation)
 app.get('/Mncomplexassociation',usercontroller.Mncomplexassociation)
 app.get('/m2m2m',usercontroller.m2m2m)
 app.get('/associationScope',usercontroller.associationScope)
+app.get('/transaction',usercontroller.transaction)
 app.listen(8080,function check(err){
     if(err){
         console.log("error generate");   
